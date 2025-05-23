@@ -1,5 +1,6 @@
 package com.tacker.tracker.service.implementation;
 
+import com.tacker.tracker.dto.InputTrackerDto;
 import com.tacker.tracker.dto.PatchTrackerDto;
 import com.tacker.tracker.dto.TrackerDto;
 import com.tacker.tracker.dto.SimpleDto;
@@ -57,14 +58,21 @@ public class TrackerServiceImpl implements TrackerService {
         return convertToDto(tracker);
     }
 
+//    @Override
+//    public TrackerDto createTracker(TrackerDto dto) {
+//        Tracker tracker = convertToEntity(dto, new Tracker());
+//        return convertToDto(trackerRepository.save(tracker));
+//    }
+
     @Override
-    public TrackerDto createTracker(TrackerDto dto) {
+    public TrackerDto createTracker(InputTrackerDto dto) {
         Tracker tracker = convertToEntity(dto, new Tracker());
         return convertToDto(trackerRepository.save(tracker));
     }
 
+
     @Override
-    public TrackerDto updateTracker(int id, TrackerDto dto) {
+    public TrackerDto updateTracker(int id, InputTrackerDto dto) {
         Tracker existing = trackerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Tracker not found with ID: " + id));
 
@@ -170,21 +178,21 @@ public class TrackerServiceImpl implements TrackerService {
                 .collect(Collectors.toList());
     }
 
-    private Tracker convertToEntity(TrackerDto dto, Tracker tracker) {
+    private Tracker convertToEntity(InputTrackerDto dto, Tracker tracker) {
         tracker.setTrackerId(dto.getTrackerId());
         tracker.setTrackerName(dto.getTrackerName());
         tracker.setClientName(dto.getClientName());
         tracker.setInvestment(dto.getInvestment());
-        tracker.setGenAiAdoptation(dto.isGenAiAdoptation());
+        tracker.setGenAiAdoptation(Boolean.TRUE.equals(dto.getGenAiAdoptation()));
 
         if (dto.getGenAiTool() != null) {
-            genAiToolRepository.findById(dto.getGenAiTool().getId())
+            genAiToolRepository.findById(dto.getGenAiTool())
                     .ifPresentOrElse(tracker::setGenAiTool,
                             () -> { throw new EntityNotFoundException("GenAI Tool not found"); });
         }
 
         if (dto.getReasonForNoGenAiAdoptation() != null) {
-            reasonRepository.findById(dto.getReasonForNoGenAiAdoptation().getId())
+            reasonRepository.findById(dto.getReasonForNoGenAiAdoptation())
                     .ifPresentOrElse(tracker::setReasonForNoGenAiAdoptation,
                             () -> { throw new EntityNotFoundException("Reason not found"); });
         }
@@ -193,17 +201,18 @@ public class TrackerServiceImpl implements TrackerService {
         tracker.getOppMicroservices().clear();
         tracker.getOppCompetitions().clear();
 
-        addRelationships(dto.getOppAccelerators(), acceleratorRepository,
+        addIdRelationships(dto.getOppAccelerators(), acceleratorRepository,
                 (entity, t) -> new OppAccelerator(entity, t), tracker.getOppAccelerators(), tracker);
 
-        addRelationships(dto.getOppMicroservices(), microserviceRepository,
+        addIdRelationships(dto.getOppMicroservices(), microserviceRepository,
                 (entity, t) -> new OppMicroservice(entity, t), tracker.getOppMicroservices(), tracker);
 
-        addRelationships(dto.getOppCompetitions(), competitionRepository,
+        addIdRelationships(dto.getOppCompetitions(), competitionRepository,
                 (entity, t) -> new OppCompetition(entity, t), tracker.getOppCompetitions(), tracker);
 
         return tracker;
     }
+
 
     private <T, O> void addRelationships(
             List<SimpleDto> dtos,
@@ -220,6 +229,24 @@ public class TrackerServiceImpl implements TrackerService {
                 .map(entity -> creator.apply(entity, tracker))
                 .forEach(collection::add);
     }
+
+
+    private <T, O> void addIdRelationships(
+            List<Integer> ids,
+            JpaRepository<T, Integer> repo,
+            BiFunction<T, Tracker, O> creator,
+            Collection<O> collection,
+            Tracker tracker
+    ) {
+        if (ids == null) return;
+        ids.stream()
+                .map(repo::findById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(entity -> creator.apply(entity, tracker))
+                .forEach(collection::add);
+    }
+
 }
 
 

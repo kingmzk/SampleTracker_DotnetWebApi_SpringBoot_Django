@@ -1,5 +1,6 @@
 package com.tacker.tracker.controller;
 
+import com.tacker.tracker.dto.InputTrackerDto;
 import com.tacker.tracker.dto.TrackerDto;
 import com.tacker.tracker.service.TrackerService;
 import org.springframework.http.ResponseEntity;
@@ -28,12 +29,12 @@ public class TrackerController {
     }
 
     @PostMapping
-    public ResponseEntity<TrackerDto> createTracker(@RequestBody TrackerDto dto) {
+    public ResponseEntity<TrackerDto> createTracker(@RequestBody InputTrackerDto dto) {
         return ResponseEntity.ok(trackerService.createTracker(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TrackerDto> updateTracker(@PathVariable int id, @RequestBody TrackerDto dto) {
+    public ResponseEntity<TrackerDto> updateTracker(@PathVariable int id, @RequestBody InputTrackerDto dto) {
         return ResponseEntity.ok(trackerService.updateTracker(id, dto));
     }
 

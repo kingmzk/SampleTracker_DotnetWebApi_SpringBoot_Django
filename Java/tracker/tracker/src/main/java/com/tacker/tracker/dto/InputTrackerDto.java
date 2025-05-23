@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class InputTrackerDto {
     private Integer id;
-    private String trackerId;
+    private Integer trackerId;
     private String trackerName;
     private String clientName;
     private Double investment;
