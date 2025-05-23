@@ -1,0 +1,271 @@
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ModelTracKer.Dto;
+using ModelTracKer.Models;
+
+namespace ModelTracKer.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class TrackerController : ControllerBase
+    {
+        private readonly TrackerDbContext _context;
+
+        public TrackerController(TrackerDbContext context)
+        {
+            _context = context;
+        }
+
+        // GET
+        [HttpGet("{id}")]
+        public async Task<ActionResult<TrackerOutputDto>> GetTracker(int id)
+        {
+            var tracker = await _context.Trackers
+                .Include(t => t.GenAiTool)
+                .Include(t => t.ReasonForNoGenAiAdoptation)
+                .Include(t => t.oppAccelerators)
+                    .ThenInclude(o => o.accelerators)
+                .Include(t => t.oppMicroservices)
+                    .ThenInclude(o => o.microService)
+                .Include(t => t.oppCompetition)
+                    .ThenInclude(o => o.competition)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+
+            if (tracker == null) return NotFound();
+
+            var result = new TrackerOutputDto
+            {
+                Id = tracker.Id,
+                Tracker_id = tracker.Tracker_id,
+                Tracker_Name = tracker.Tracker_Name,
+                Client_Name = tracker.Client_Name,
+                Investment = tracker.Investment,
+                GenAiAdoptation = tracker.GenAiAdoptation,
+                GenAiToolName = tracker.GenAiTool?.Name,
+                ReasonForNoGenAiAdoptationName = tracker.ReasonForNoGenAiAdoptation?.Name,
+                OppAccelerators = tracker.oppAccelerators?
+                .Where(o => o.accelerators != null)
+                .Select(o => o.accelerators.Name).ToList(),
+                    OppMicroservices = tracker.oppMicroservices?
+                .Where(o => o.microService != null)
+                .Select(o => o.microService.Name).ToList(),
+                    OppCompetitions = tracker.oppCompetition?
+                .Where(o => o.competition != null)
+                .Select(o => o.competition.Name).ToList()
+                };
+
+            return Ok(result);
+        }
+
+
+        // POST
+        [HttpPost]
+        public async Task<IActionResult> CreateTracker([FromBody] TrackerInputDto dto)
+        {
+            var tracker = new Tracker
+            {
+                Tracker_id = dto.Tracker_id,
+                Tracker_Name = dto.Tracker_Name,
+                Client_Name = dto.Client_Name,
+                Investment = dto.Investment,
+                GenAiAdoptation = dto.GenAiAdoptation,
+                GenAiTool_Id = dto.GenAiTool_Id,
+                ReasonForNoGenAiAdoptation_Id = dto.ReasonForNoGenAiAdoptation_Id
+            };
+
+            _context.Trackers.Add(tracker);
+            await _context.SaveChangesAsync(); // Save first to get the generated tracker.Id
+
+            // Now insert into connection tables manually
+            if (dto.OppAcceleratorIds != null)
+            {
+                foreach (var accId in dto.OppAcceleratorIds)
+                {
+                    var opp = new opp_Accelerator
+                    {
+                        TrackerId = tracker.Id,
+                        AcceleratorId = accId
+                    };
+                    _context.OppAccelerators.Add(opp);
+                }
+            }
+
+            if (dto.OppMicroserviceIds != null)
+            {
+                foreach (var msId in dto.OppMicroserviceIds)
+                {
+                    var oppMs = new opp_microservice
+                    {
+                        TrackerId = tracker.Id,
+                        MicroserviceId = msId
+                    };
+                    _context.OppMicroservices.Add(oppMs);
+                }
+            }
+
+            if (dto.OppCompetitionIds != null)
+            {
+                foreach (var compId in dto.OppCompetitionIds)
+                {
+                    var oppComp = new opp_competition
+                    {
+                        TrackerId = tracker.Id,
+                        CompetitionId = compId
+                    };
+                    _context.OppCompetitions.Add(oppComp);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(tracker.Id);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateTracker(int id, [FromBody] TrackerInputDto dto)
+        {
+            var tracker = await _context.Trackers
+                .Include(t => t.oppAccelerators)
+                .Include(t => t.oppMicroservices)
+                .Include(t => t.oppCompetition)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (tracker == null)
+                return NotFound();
+
+            // Update scalar properties
+            tracker.Tracker_id = dto.Tracker_id;
+            tracker.Tracker_Name = dto.Tracker_Name;
+            tracker.Client_Name = dto.Client_Name;
+            tracker.Investment = dto.Investment;
+            tracker.GenAiAdoptation = dto.GenAiAdoptation;
+            tracker.GenAiTool_Id = dto.GenAiTool_Id;
+            tracker.ReasonForNoGenAiAdoptation_Id = dto.ReasonForNoGenAiAdoptation_Id;
+
+            // Remove old connections
+            _context.OppAccelerators.RemoveRange(tracker.oppAccelerators);
+            _context.OppMicroservices.RemoveRange(tracker.oppMicroservices);
+            _context.OppCompetitions.RemoveRange(tracker.oppCompetition);
+
+            // Add new connections
+            tracker.oppAccelerators = dto.OppAcceleratorIds?.Select(id => new opp_Accelerator
+            {
+                TrackerId = tracker.Id,
+                AcceleratorId = id
+            }).ToList();
+
+            tracker.oppMicroservices = dto.OppMicroserviceIds?.Select(id => new opp_microservice
+            {
+                TrackerId = tracker.Id,
+                MicroserviceId = id
+            }).ToList();
+
+            tracker.oppCompetition = dto.OppCompetitionIds?.Select(id => new opp_competition
+            {
+                TrackerId = tracker.Id,
+                CompetitionId = id
+            }).ToList();
+
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PatchTracker(int id, [FromBody] TrackerPatchDto dto)
+        {
+            var tracker = await _context.Trackers
+                .Include(t => t.oppAccelerators)
+                .Include(t => t.oppMicroservices)
+                .Include(t => t.oppCompetition)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (tracker == null)
+                return NotFound();
+
+            // Only update if not null
+            if (dto.Tracker_id != null)
+                tracker.Tracker_id = (int) dto.Tracker_id; 
+
+            if (dto.Tracker_Name != null)
+                tracker.Tracker_Name = dto.Tracker_Name;
+
+            if (dto.Client_Name != null)
+                tracker.Client_Name = dto.Client_Name;
+
+            if (dto.Investment.HasValue)
+                tracker.Investment = dto.Investment.Value;          
+
+            if (dto.GenAiAdoptation.HasValue)
+                tracker.GenAiAdoptation = dto.GenAiAdoptation.Value;
+
+            if (dto.GenAiTool_Id.HasValue)
+                tracker.GenAiTool_Id = dto.GenAiTool_Id.Value;
+
+            if (dto.ReasonForNoGenAiAdoptation_Id.HasValue)
+                tracker.ReasonForNoGenAiAdoptation_Id = dto.ReasonForNoGenAiAdoptation_Id.Value;
+
+            // If new IDs are passed, update them
+            if (dto.OppAcceleratorIds != null)
+            {
+                _context.OppAccelerators.RemoveRange(tracker.oppAccelerators);
+                tracker.oppAccelerators = dto.OppAcceleratorIds.Select(id => new opp_Accelerator
+                {
+                    TrackerId = tracker.Id,
+                    AcceleratorId = id
+                }).ToList();
+            }
+
+            if (dto.OppMicroserviceIds != null)
+            {
+                _context.OppMicroservices.RemoveRange(tracker.oppMicroservices);
+                tracker.oppMicroservices = dto.OppMicroserviceIds.Select(id => new opp_microservice
+                {
+                    TrackerId = tracker.Id,
+                    MicroserviceId = id
+                }).ToList();
+            }
+
+            if (dto.OppCompetitionIds != null)
+            {
+                _context.OppCompetitions.RemoveRange(tracker.oppCompetition);
+                tracker.oppCompetition = dto.OppCompetitionIds.Select(id => new opp_competition
+                {
+                    TrackerId = tracker.Id,
+                    CompetitionId = id
+                }).ToList();
+            }
+
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTracker(int id)
+        {
+            var tracker = await _context.Trackers
+                .Include(t => t.oppAccelerators)
+                .Include(t => t.oppMicroservices)
+                .Include(t => t.oppCompetition)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (tracker == null)
+                return NotFound();
+
+            // Remove related join table records first
+            _context.OppAccelerators.RemoveRange(tracker.oppAccelerators);
+            _context.OppMicroservices.RemoveRange(tracker.oppMicroservices);
+            _context.OppCompetitions.RemoveRange(tracker.oppCompetition);
+
+            // Remove tracker
+            _context.Trackers.Remove(tracker);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+    }
+}

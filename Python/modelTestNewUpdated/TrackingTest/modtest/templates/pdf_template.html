@@ -1,0 +1,102 @@
+{% comment %} <!DOCTYPE html>
+<html>
+<head>
+    <title>PDF Template</title>
+    <style>
+        /* Add your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>PDF Template</h1>
+    <p>Opportunity ID: {{ op_id }}</p>
+    <p>Opportunity Name: {{ op_name }}</p>
+    <p>Client Name: {{ client_name }}</p>
+    <p>Accelerators:</p>
+    <ul>
+        {% for accelerator in accelerators %}
+        <li>{{ accelerator }}</li>
+        {% endfor %}
+    </ul>
+    <p>Competations:</p>
+    <ul>
+        {% for competation in competations %}
+        <li>{{ competation }}</li>
+        {% endfor %}
+    </ul>
+    <p>Microservices:</p>
+    <ul>
+        {% for microservice in microservices %}
+        <li>{{ microservice }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html> {% endcomment %}
+
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF Template</title>
+    <style>
+        /* Add your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .page-break {
+            page-break-inside: avoid;
+        }
+    </style>
+</head>
+<body>
+    <h1>PDF Template</h1>
+    <h1>PDF Template</h1>
+    <p>Opportunity ID: {{ op_id }}</p>
+    <p>Opportunity Name: {{ op_name }}</p>
+    <p>Client Name: {{ client_name }}</p>
+    <p>Accelerators:</p>
+    <ul>
+        {% for accelerator in accelerators %}
+        <li>{{ accelerator }}</li>
+        {% endfor %}
+    </ul>
+    <p>Competations:</p>
+    <ul>
+        {% for competation in competations %}
+        <li>{{ competation }}</li>
+        {% endfor %}
+    </ul>
+    <p>Microservices:</p>
+    <ul>
+        {% for microservice in microservices %}
+        <li>{{ microservice }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

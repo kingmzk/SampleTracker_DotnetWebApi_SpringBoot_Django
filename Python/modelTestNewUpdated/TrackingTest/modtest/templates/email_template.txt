@@ -1,0 +1,27 @@
+Hello,
+
+A new OptyTracker instance has been created with the following details:
+
+OptyTracker ID: {{ opty_tracker.id }}
+Name: {{ opty_tracker.name }}
+Description: {{ opty_tracker.description }}
+
+Competations:
+{% for competation in competations_list %}
+- {{ competation }}
+{% endfor %}
+
+{% for competation in competations_list %}
+- {{ competation }}
+{% endfor %}
+
+
+{% for competation in competations_list %}
+- {{ competation }}
+{% endfor %}
+
+
+Thank you for using OptyTracker!
+
+Best regards,
+mohammed zakria khan

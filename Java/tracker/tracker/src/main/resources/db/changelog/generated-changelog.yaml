@@ -1,0 +1,112 @@
+databaseChangeLog:
+- changeSet:
+    id: 1747241919344-1
+    author: moham (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            computed: false
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: PK__opp_acce__3213E83F8286F33E
+            name: id
+            type: int
+        - column:
+            computed: false
+            name: accelerator_id
+            type: int
+        - column:
+            computed: false
+            name: tracker_id
+            type: int
+        tableName: opp_accelerator
+- changeSet:
+    id: 1747241919344-2
+    author: moham (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            computed: false
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: PK__accelera__3213E83F31F324D7
+            name: id
+            type: int
+        - column:
+            computed: false
+            name: value
+            type: varchar(255)
+        tableName: accelerator
+- changeSet:
+    id: 1747241919344-3
+    author: moham (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            computed: false
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: PK__tracker__3213E83FFAAFEEC7
+            name: id
+            type: int
+        tableName: tracker
+- changeSet:
+    id: 1747241919344-4
+    author: moham (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            computed: false
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: PK_USERS
+            name: id
+            type: bigint
+        - column:
+            computed: false
+            name: name
+            type: varchar(255)
+        tableName: users
+- changeSet:
+    id: 1747241919344-5
+    author: moham (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: accelerator_id
+        baseTableName: opp_accelerator
+        constraintName: FK5cjkv41vlbptn13ywq7wb09a2
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: accelerator
+        validate: true
+- changeSet:
+    id: 1747241919344-6
+    author: moham (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: tracker_id
+        baseTableName: opp_accelerator
+        constraintName: FKryhoel1ls7wv43cxpbwih5mtt
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: tracker
+        validate: true
+

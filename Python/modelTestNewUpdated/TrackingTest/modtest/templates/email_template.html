@@ -1,0 +1,77 @@
+{% comment %} <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>New OptyTracker Instance Created</title>
+</head>
+<body>
+    <h2>New OptyTracker Instance Created</h2>
+    <p>Competitions:</p>
+    <ul>
+        {% for competition in competations_list %}
+            <li>{{ competition }}</li>
+        {% endfor %}
+    </ul>
+    <ul>
+        {% for accelerator in accelerators_list %}
+            <li>{{ accelerator }}</li>
+        {% endfor %}
+    </ul>
+    <ul>
+        {% for microservice in microservices_list %}
+            <li>{{ microservice }}</li>
+        {% endfor %}
+    </ul>
+    <p>OptyTracker Details:</p>
+    <ul>
+        <li>ID: {{ opty_tracker.op_id }}</li>
+        <li>Name: {{ opty_tracker.op_name }}</li>
+        <li>Description: {{ opty_tracker.client_name }}</li>
+        <!-- Include any other relevant details you want to display -->
+    </ul>
+</body>
+</html> {% endcomment %}
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>New OptyTracker Instance Created</title>
+</head>
+<body>
+    <h2>New OptyTracker Instance Created</h2>
+    <p>Competitions:</p>
+    <ul>
+        {% for competition in competations_list %}
+            <li>{{ competition }}</li>
+        {% endfor %}
+    </ul>
+    <p>Accelerators:</p>
+    <ul>
+        {% for accelerator in accelerators_list %}
+            <li>{{ accelerator }}</li>
+        {% endfor %}
+    </ul>
+    <p>Microservices:</p>
+    <ul>
+        {% for microservice in microservices_list %}
+            <li>{{ microservice }}</li>
+        {% endfor %}
+    </ul>
+    <p>OptyTracker Details:</p>
+    <ul>
+        <li>ID: {{ opty_tracker.op_id }}</li>
+        <li>Name: {{ opty_tracker.op_name }}</li>
+        <li>Description: {{ opty_tracker.client_name }}</li>
+        <!-- Include any other relevant details you want to display -->
+    </ul>
+</body>
+</html>
