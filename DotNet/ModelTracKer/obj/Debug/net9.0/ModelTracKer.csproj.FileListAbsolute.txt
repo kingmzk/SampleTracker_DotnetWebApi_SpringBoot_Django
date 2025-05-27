@@ -161,3 +161,5 @@ D:\Tracker\DotNet\ModelTracker\obj\Debug\net9.0\staticwebassets.build.json.cache
 D:\Tracker\DotNet\ModelTracker\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
 D:\Tracker\DotNet\ModelTracker\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 D:\Tracker\DotNet\ModelTracker\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+D:\Tracker\DotNet\ModelTracker\obj\Debug\net9.0\ModelTracKer.sourcelink.json
+D:\Tracker\DotNet\ModelTracker\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

@@ -1,8 +1,11 @@
 from django.http import JsonResponse
-
-def hello(request):
-    return JsonResponse({"message" : "Hello world this message is not connected to any database"})
-
+from modtest.authentication import IsAdminRole
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from .serializers import MyTokenObtainPairSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status 
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -15,10 +18,24 @@ from .serializers import (
     CompetitionSerializer,
     MicroserviceSerializer,
     ClientGenAIAdoptationSerializer,
-    ReasonForGenAIAdoptationSerializer
+    ReasonForGenAIAdoptationSerializer,
+    RegisterSerializer
 )
+from rest_framework_simplejwt.views import TokenObtainPairView
+from django.contrib.auth import authenticate
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import AllowAny
+import pyodbc
+from django.http import HttpResponse
+from io import BytesIO
+import openpyxl
+
+
+def hello(request):
+    return JsonResponse({"message" : "Hello world this message is not connected to any database"})
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated, IsAdminRole]) # Ensure only admin users can access this view
 def get_opportunity(request, pk=None):
     if pk is not None:
         try:
@@ -91,8 +108,9 @@ def get_opportunity(request, pk=None):
 #         data = [serialize_account(acc) for acc in accounts]
 #         return JsonResponse(data, safe=False, status=200)
 
-
+from rest_framework.permissions import IsAuthenticated
 @api_view(['GET'])
+# permission_classes = [IsAuthenticated]
 def get_account_details(request, pk=None):
     if pk is not None:
         try:
@@ -335,13 +353,40 @@ def delete_opportunity(request, pk):
 
 
 
-import pyodbc
-from django.http import HttpResponse
-from io import BytesIO
-import openpyxl
-from rest_framework.decorators import api_view
-from rest_framework import status  # Added missing import
-from rest_framework.response import Response  # Added for proper error responses
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
+
+
+
+class CustomTokenObtainView(APIView):
+    permission_classes = [AllowAny] 
+    def post(self, request):
+        username = request.data.get("username")
+        password = request.data.get("password")
+
+        user = authenticate(username=username, password=password)
+
+        if user is not None:
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            })
+        return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+
+class RegisterView(APIView):
+    permission_classes = [AllowAny] 
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "User registered successfully"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
 @api_view(['POST'])
 def download_report(request):

@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ModelTracKer.Data;
 
-
 #nullable disable
 
 namespace ModelTracKer.Migrations
@@ -113,6 +112,23 @@ namespace ModelTracKer.Migrations
                     b.ToTable("ReasonForNoGenAiAdoptation");
                 });
 
+            modelBuilder.Entity("ModelTracKer.Models.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+                });
+
             modelBuilder.Entity("ModelTracKer.Models.Tracker", b =>
                 {
                     b.Property<int>("Id")
@@ -153,6 +169,32 @@ namespace ModelTracKer.Migrations
                     b.HasIndex("ReasonForNoGenAiAdoptation_Id");
 
                     b.ToTable("tracker");
+                });
+
+            modelBuilder.Entity("ModelTracKer.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("ModelTracKer.Models.opp_Accelerator", b =>
@@ -243,6 +285,17 @@ namespace ModelTracKer.Migrations
                     b.Navigation("ReasonForNoGenAiAdoptation");
                 });
 
+            modelBuilder.Entity("ModelTracKer.Models.User", b =>
+                {
+                    b.HasOne("ModelTracKer.Models.Role", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("ModelTracKer.Models.opp_Accelerator", b =>
                 {
                     b.HasOne("ModelTracKer.Models.Accelerator", "accelerators")
@@ -271,7 +324,7 @@ namespace ModelTracKer.Migrations
                         .IsRequired();
 
                     b.HasOne("ModelTracKer.Models.Tracker", "tracker")
-                        .WithMany("oppCompetition")
+                        .WithMany("oppCompetitions")
                         .HasForeignKey("TrackerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -283,7 +336,7 @@ namespace ModelTracKer.Migrations
 
             modelBuilder.Entity("ModelTracKer.Models.opp_microservice", b =>
                 {
-                    b.HasOne("ModelTracKer.Models.MicroService", "microService")
+                    b.HasOne("ModelTracKer.Models.MicroService", "microservice")
                         .WithMany("OppMicroservice")
                         .HasForeignKey("MicroserviceId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -295,7 +348,7 @@ namespace ModelTracKer.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("microService");
+                    b.Navigation("microservice");
 
                     b.Navigation("trackers");
                 });
@@ -325,11 +378,16 @@ namespace ModelTracKer.Migrations
                     b.Navigation("Trackers");
                 });
 
+            modelBuilder.Entity("ModelTracKer.Models.Role", b =>
+                {
+                    b.Navigation("Users");
+                });
+
             modelBuilder.Entity("ModelTracKer.Models.Tracker", b =>
                 {
                     b.Navigation("oppAccelerators");
 
-                    b.Navigation("oppCompetition");
+                    b.Navigation("oppCompetitions");
 
                     b.Navigation("oppMicroservices");
                 });

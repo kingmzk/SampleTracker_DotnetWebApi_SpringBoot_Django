@@ -4,6 +4,9 @@ from django.http import HttpResponse
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from modtest.views import (
+     CustomTokenObtainView,
+     MyTokenObtainPairView,
+     RegisterView,
      create_opportunity,
      delete_opportunity,
      download_report,
@@ -17,7 +20,7 @@ from modtest.views import (
 from django.urls import reverse_lazy
 from django.urls import path
 from django.urls import re_path
-
+from rest_framework_simplejwt.views import TokenRefreshView
 
 router = DefaultRouter()
 
@@ -32,5 +35,8 @@ urlpatterns = [
     path('opportunities/partial-update/<int:pk>/', partial_update_opportunity, name='opportunity-partial-update'),
     path('opportunities/delete/<int:pk>/', delete_opportunity, name='opportunity-delete'),
     path('opportunities/download_report/', download_report, name='opportunity-download-report'),
- 
+    path('api/token/', CustomTokenObtainView.as_view(), name='custom_token_obtain'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/register/', RegisterView.as_view(), name='register'),
+
 ]

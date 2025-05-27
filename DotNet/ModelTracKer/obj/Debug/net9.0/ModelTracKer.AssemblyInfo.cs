@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ModelTracKer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a6b499e7a2453bf4f129e197215566fbe6a6fdae")]
 [assembly: System.Reflection.AssemblyProductAttribute("ModelTracKer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ModelTracKer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

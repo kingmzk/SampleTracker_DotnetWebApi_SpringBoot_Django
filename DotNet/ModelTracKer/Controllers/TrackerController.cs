@@ -1,5 +1,6 @@
 ﻿
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ModelTracKer.Dto;
@@ -8,6 +9,7 @@ using ModelTracKer.Services.Interfaces;
 
 namespace ModelTracKer.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class TrackerController : ControllerBase
@@ -19,7 +21,8 @@ namespace ModelTracKer.Controllers
             _trackerService = trackerService;
         }
 
-        // GET: api/tracker
+
+        //[Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TrackerOutputDto>>> GetAll()
         {
@@ -27,7 +30,7 @@ namespace ModelTracKer.Controllers
             return Ok(result);
         }
 
-        // GET: api/tracker/{id}
+
         [HttpGet("{id}")]
         public async Task<ActionResult<TrackerOutputDto>> GetById(int id)
         {
@@ -37,7 +40,7 @@ namespace ModelTracKer.Controllers
             return Ok(result);
         }
 
-        // POST: api/tracker
+
         [HttpPost]
         public async Task<ActionResult<TrackerOutputDto>> Create([FromBody] TrackerInputDto dto)
         {
@@ -48,7 +51,7 @@ namespace ModelTracKer.Controllers
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
-        // PUT: api/tracker/{id}
+
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] TrackerInputDto dto)
         {
@@ -62,7 +65,7 @@ namespace ModelTracKer.Controllers
             return NoContent();
         }
 
-        // PATCH: api/tracker/{id}
+
         [HttpPatch("{id}")]
         public async Task<IActionResult> Patch(int id, [FromBody] TrackerPatchDto dto)
         {
@@ -73,7 +76,7 @@ namespace ModelTracKer.Controllers
             return NoContent();
         }
 
-        // DELETE: api/tracker/{id}
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
