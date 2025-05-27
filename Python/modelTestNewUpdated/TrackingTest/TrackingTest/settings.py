@@ -103,6 +103,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
+    'SIGNING_KEY': '05fcf774-ebdc-43bc-9d89-b9068ec41e3a',
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True,
